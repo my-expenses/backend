@@ -4,15 +4,15 @@ import (
 	db "backend/database"
 	"backend/routes"
 	"backend/utils"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	r := gin.Default()
+	e := echo.New()
 
 	utils.InitializeEnvVars()
 	db.MigrateTables()
-	routes.InitializeRoutes(r)
+	routes.InitializeRoutes(e)
 
-	r.Run(":3000")
+	e.Start(":3000")
 }

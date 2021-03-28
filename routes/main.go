@@ -2,23 +2,22 @@ package routes
 
 import (
 	usersRoutes "backend/routes/users"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func InitializeRoutes(r *gin.Engine) {
-	CORSMiddleware(r)
-	users := r.Group("users")
+func InitializeRoutes(e *echo.Echo) {
+	CORSMiddleware(e)
+	users := e.Group("users")
 	usersRoutes.InitializeUsersRoutes(users)
 }
 
-func CORSMiddleware(r *gin.Engine) {
-	r.Use(cors.New(cors.Config{
+func CORSMiddleware(e *echo.Echo) {
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"http://localhost:8080",
 			"http://192.168.1.100:8080",
 		},
-		AllowMethods: []string{"POST, OPTIONS, GET, PUT, DELETE"},
-		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization", "Access-Control-Allow-Origin"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderAccessControlAllowOrigin},
 	}))
 }
