@@ -1,11 +1,13 @@
 package users
 
 import (
-	customErrors "backend/database/errors"
+	customDatabaseErrors "backend/database/errors"
 	usersModel "backend/models/users"
+	customServicesErrors "backend/services/errors"
 	usersServices "backend/services/users"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func NewUser(c *gin.Context) {
@@ -13,21 +15,37 @@ func NewUser(c *gin.Context) {
 	c.Bind(&user)
 
 	password := c.PostForm("password")
-	err := usersServices.NewUser(&user, password)
+	confirmPassword := c.PostForm("confirmPassword")
+	err := usersServices.NewUser(&user, password, confirmPassword)
 
 	if err != nil {
-		if errors.Is(err, &customErrors.DuplicateEmailError{}) {
-			c.JSON(409, gin.H{
+		if errors.Is(err, &customServicesErrors.PasswordsDontMatchError{}) {
+			c.JSON(http.StatusNotAcceptable, gin.H{
+				"message": "Passwords dont match",
+			})
+		}
+		if errors.Is(err, &customDatabaseErrors.DuplicateEmailError{}) {
+			c.JSON(http.StatusConflict, gin.H{
 				"message": "Duplicate email",
 			})
 			return
 		}
-		c.JSON(500, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal server error",
 		})
 		return
 	}
-	c.JSON(200, gin.H{
+	err = usersServices.NewCredentials(&usersModel.Credential{
+		UserID:   user.ID,
+		Password: password,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server error",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 	})
 

@@ -7,12 +7,15 @@ import (
 	"strings"
 )
 
-func NewUser(user *usersModel.User, credential *usersModel.Credential) error {
+func NewUser(user *usersModel.User) error {
 	err := dbInstance.GetDBConnection().Create(user).Error
 	if err != nil {
 		strings.HasPrefix(err.Error(), "Error 1062")
 		return &customErrors.DuplicateEmailError{}
 	}
-	credential.UserID = user.ID
-	return dbInstance.GetDBConnection().Create(credential).Error
+	return err
+}
+
+func NewCredentials(credentials *usersModel.Credential) error {
+	return dbInstance.GetDBConnection().Create(credentials).Error
 }
