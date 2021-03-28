@@ -10,6 +10,21 @@ import (
 	"net/http"
 )
 
+func Login(c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	err := usersServices.Login(email, password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid credentials",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
+	})
+}
+
 func NewUser(c *gin.Context) {
 	var user usersModel.User
 	c.Bind(&user)
@@ -23,6 +38,7 @@ func NewUser(c *gin.Context) {
 			c.JSON(http.StatusNotAcceptable, gin.H{
 				"message": "Passwords dont match",
 			})
+			return
 		}
 		if errors.Is(err, &customDatabaseErrors.DuplicateEmailError{}) {
 			c.JSON(http.StatusConflict, gin.H{

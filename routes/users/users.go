@@ -6,6 +6,7 @@ import (
 )
 
 func InitializeUsersRoutes(usersRoute *gin.RouterGroup) {
+	usersRoute.POST("/login", usersController.Login)
 	usersRoute.POST("/register", usersController.NewUser)
 }
 

@@ -7,6 +7,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func Login(email, password string) error {
+	user, err := usersDBInteractions.GetUserByEmail(email)
+	if err != nil {
+		return err
+	}
+	credential := usersDBInteractions.GetCredentialsByUserID(user.ID)
+	return bcrypt.CompareHashAndPassword([]byte(credential.Password), []byte(password))
+}
+
 func NewUser(user *usersModel.User, password, confirmPassword string) error {
 	if password != confirmPassword {
 		return &customErrors.PasswordsDontMatchError{}
