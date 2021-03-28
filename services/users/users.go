@@ -7,13 +7,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(email, password string) error {
+func Login(email, password string) (uint, error) {
 	user, err := usersDBInteractions.GetUserByEmail(email)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	credential := usersDBInteractions.GetCredentialsByUserID(user.ID)
-	return bcrypt.CompareHashAndPassword([]byte(credential.Password), []byte(password))
+	return user.ID, bcrypt.CompareHashAndPassword([]byte(credential.Password), []byte(password))
 }
 
 func NewUser(user *usersModel.User, password, confirmPassword string) error {

@@ -2,6 +2,7 @@ package users
 
 import (
 	customDatabaseErrors "backend/database/errors"
+	authMiddleware "backend/middlewares/auth"
 	usersModel "backend/models/users"
 	customServicesErrors "backend/services/errors"
 	usersServices "backend/services/users"
@@ -13,13 +14,20 @@ import (
 func Login(c echo.Context) error {
 	email := c.FormValue("email")
 	password := c.FormValue("password")
-	err := usersServices.Login(email, password)
+	userID, err := usersServices.Login(email, password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"message": "Invalid credentials",
 		})
 	}
+	token, err := authMiddleware.GenerateJWT(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "Error generating the token",
+		})
+	}
 	return c.JSON(http.StatusOK, echo.Map{
+		"token": token,
 		"message": "success",
 	})
 }
