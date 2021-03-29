@@ -7,4 +7,5 @@ import (
 
 func initializeTransactionsRoutes(loggedInRoute *echo.Group) {
 	loggedInRoute.POST("/categories", categoriesController.CreateCategory)
+	loggedInRoute.DELETE("/categories/:categoryID", categoriesController.DeleteCategory)
 }

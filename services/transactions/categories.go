@@ -8,3 +8,7 @@ import (
 func CreateCategory(category *categoriesModel.Category) error {
 	return categoriesDBInteractions.CreateCategory(category)
 }
+
+func DeleteCategory(categoryID, loggedInUserID uint) error {
+	return categoriesDBInteractions.DeleteCategory(categoryID, loggedInUserID)
+}

@@ -20,8 +20,8 @@ func GenerateJWT(userID uint) (string, error) {
 }
 
 // FetchLoggedInUserID retrieves the logged-in user's ID
-func FetchLoggedInUserID(c echo.Context) uint {
-	user := c.Get("user").(*jwt.Token)
+func FetchLoggedInUserID(c *echo.Context) uint {
+	user := (*c).Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	id := uint(claims["id"].(float64))
 	return id
