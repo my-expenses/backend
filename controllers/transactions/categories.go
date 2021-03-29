@@ -39,3 +39,11 @@ func DeleteCategory(c echo.Context) error {
 	}
 	return c.JSON(http.StatusNoContent, echo.Map{})
 }
+
+func GetCategories(c echo.Context) error {
+	loggedInUserID := authController.FetchLoggedInUserID(&c)
+	categories := categoriesServices.GetCategories(loggedInUserID)
+	return c.JSON(http.StatusOK, echo.Map{
+		"categories": categories,
+	})
+}

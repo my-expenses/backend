@@ -31,10 +31,22 @@ var (
 	}
 )
 
-
-
 type categoryJSONResponse struct {
 	Category transactions.Category `json:"category"`
+}
+
+func TestGetCategories(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, categoriesURL, nil)
+	rec := httptest.NewRecorder()
+
+	c := e.NewContext(req, rec)
+	c.Set("user", userClaims)
+	utils.InitializeEnvVars()
+
+	if assert.NoError(t, GetCategories(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
 func TestCreateCategory(t *testing.T) {
