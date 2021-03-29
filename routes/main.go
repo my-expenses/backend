@@ -1,15 +1,17 @@
 package routes
 
 import (
-	usersRoutes "backend/routes/users"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"os"
 )
 
 func InitializeRoutes(e *echo.Echo) {
 	CORSMiddleware(e)
 	users := e.Group("users")
-	usersRoutes.InitializeUsersRoutes(users)
+	loggedIn := e.Group("/auth", middleware.JWT([]byte(os.Getenv("JWT_TOKEN"))))
+	initializeUsersRoutes(users)
+	initializeTransactionsRoutes(loggedIn)
 }
 
 func CORSMiddleware(e *echo.Echo) {

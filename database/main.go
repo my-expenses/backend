@@ -1,6 +1,7 @@
 package database
 
 import (
+	transactionsModel "backend/models/transactions"
 	usersModel "backend/models/users"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,6 +19,8 @@ func MigrateTables() {
 		databaseConnection.AutoMigrate(
 			&usersModel.User{},
 			&usersModel.Credential{},
+			&transactionsModel.Category{},
+			&transactionsModel.Transaction{},
 		)
 	}
 }
