@@ -35,7 +35,15 @@ func Login(c echo.Context) error {
 func NewUser(c echo.Context) error {
 	var user usersModel.User
 	c.Bind(&user)
+	if err := c.Validate(user); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
 
+	var credentials usersModel.Credential
+	c.Bind(&credentials)
+	if err := c.Validate(credentials); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
 	password := c.FormValue("password")
 	confirmPassword := c.FormValue("confirmPassword")
 	err := usersServices.NewUser(&user, password, confirmPassword)
