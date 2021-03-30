@@ -3,7 +3,6 @@ package users
 import (
 	usersDBInteractions "backend/database/users"
 	usersModel "backend/models/users"
-	customErrors "backend/services/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,10 +15,7 @@ func Login(email, password string) (uint, error) {
 	return user.ID, bcrypt.CompareHashAndPassword([]byte(credential.Password), []byte(password))
 }
 
-func NewUser(user *usersModel.User, password, confirmPassword string) error {
-	if password != confirmPassword {
-		return &customErrors.PasswordsDontMatchError{}
-	}
+func NewUser(user *usersModel.User) error {
 	return usersDBInteractions.NewUser(user)
 }
 
