@@ -31,6 +31,11 @@ func TestCreateCategory(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
+func TestGetMoreThanZeroCategories(t *testing.T) {
+	categories := GetCategories(27)
+	assert.Greater(t, len(categories), 0)
+}
+
 func TestCreateCategoryConflict(t *testing.T) {
 	category := categoriesModel.Category{
 		UserID:      27,
@@ -49,4 +54,9 @@ func TestDeleteCategory(t *testing.T) {
 func TestDeleteNoCategoryFound(t *testing.T) {
 	err := DeleteCategory(521569, 27)
 	assert.Equal(t, err, &customErrors.RecordNotFoundError{})
+}
+
+func TestGetZeroCategories(t *testing.T) {
+	categories := GetCategories(27)
+	assert.Equal(t, len(categories), 0)
 }
