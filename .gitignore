@@ -2,4 +2,4 @@
 __debug_bin
 main
 deployment
-utils/env.go
+.env

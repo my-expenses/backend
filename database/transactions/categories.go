@@ -7,7 +7,11 @@ import (
 )
 
 func CreateCategory(category *categoriesModel.Category) error {
-	return dbInstance.GetDBConnection().Create(category).Error
+	db := dbInstance.GetDBConnection().Create(category)
+	if db.RowsAffected == 0 {
+		return &customDatabaseErrors.DuplicateCategoryError{}
+	}
+	return db.Error
 }
 
 func DeleteCategory(categoryID, loggedInUserID uint) error {

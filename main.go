@@ -5,7 +5,9 @@ import (
 	"backend/routes"
 	"backend/utils"
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"log"
 )
 
 func main() {
@@ -15,7 +17,10 @@ func main() {
 	customValidator.TranslateErrors()
 	e.Validator = customValidator
 
-	utils.InitializeEnvVars()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading env file")
+	}
 	db.MigrateTables()
 	routes.InitializeRoutes(e)
 
