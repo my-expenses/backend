@@ -16,3 +16,7 @@ func DeleteCategory(categoryID, loggedInUserID uint) error {
 func GetCategories(userID uint) []categoriesModel.Category {
 	return categoriesDBInteractions.GetCategories(userID)
 }
+
+func UpdateCategory(category *categoriesModel.Category) error {
+	return categoriesDBInteractions.UpdateCategory(category)
+}

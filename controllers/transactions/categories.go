@@ -14,8 +14,14 @@ import (
 func CreateCategory(c echo.Context) error {
 	var category categoriesModel.Category
 	c.Bind(&category)
+	err := c.Validate(category)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
 	category.UserID = authController.FetchLoggedInUserID(&c)
-	err := categoriesServices.CreateCategory(&category)
+	err = categoriesServices.CreateCategory(&category)
 	if err != nil {
 		return c.JSON(http.StatusConflict, echo.Map{})
 	}
@@ -45,5 +51,24 @@ func GetCategories(c echo.Context) error {
 	categories := categoriesServices.GetCategories(loggedInUserID)
 	return c.JSON(http.StatusOK, echo.Map{
 		"categories": categories,
+	})
+}
+
+func UpdateCategory(c echo.Context) error {
+	var category categoriesModel.Category
+	c.Bind(&category)
+	err := c.Validate(category)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+	category.UserID = authController.FetchLoggedInUserID(&c)
+	err = categoriesServices.UpdateCategory(&category)
+	if err != nil {
+		return c.JSON(http.StatusConflict, echo.Map{})
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"category": category,
 	})
 }

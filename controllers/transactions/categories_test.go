@@ -5,10 +5,15 @@ import (
 	"backend/utils"
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -19,7 +24,6 @@ var (
 
 	categoryJSONRequest = map[string]interface{}{
 		"title": "Test Category",
-		"description": "Testing category creation from the categories_test file",
 	}
 	categoriesURL = "/auth/categories"
 
@@ -29,20 +33,35 @@ var (
 			"id": float64(27),
 		},
 	}
+	e *echo.Echo
+	createdID uint
 )
 
 type categoryJSONResponse struct {
 	Category transactions.Category `json:"category"`
 }
 
+func TestMain(m *testing.M) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading env file, %v", err)
+	}
+
+	e = echo.New()
+	customValidator := &utils.CustomValidator{Validator: validator.New()}
+	customValidator.TranslateErrors()
+	e.Validator = customValidator
+
+	os.Exit(m.Run())
+}
+
+
 func TestGetCategories(t *testing.T) {
-	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, categoriesURL, nil)
 	rec := httptest.NewRecorder()
 
 	c := e.NewContext(req, rec)
 	c.Set("user", userClaims)
-	utils.InitializeEnvVars()
 
 	if assert.NoError(t, GetCategories(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -50,7 +69,6 @@ func TestGetCategories(t *testing.T) {
 }
 
 func TestCreateCategory(t *testing.T) {
-	e := echo.New()
 	str, _ := json.Marshal(categoryJSONRequest)
 	req := httptest.NewRequest(http.MethodPost, categoriesURL, strings.NewReader(string(str)))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -58,29 +76,25 @@ func TestCreateCategory(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.Set("user", userClaims)
-	utils.InitializeEnvVars()
 
 	if assert.NoError(t, CreateCategory(c)) {
 		var category categoryJSONResponse
 		_ = json.Unmarshal([]byte(rec.Body.String()), &category)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, categoryJSONRequest["title"], category.Category.Title)
-		assert.Equal(t, categoryJSONRequest["description"], category.Category.Description)
+		createdID = category.Category.ID
 	}
 }
 
 func TestDeleteCategory(t *testing.T) {
-	e := echo.New()
-
 	req := httptest.NewRequest(http.MethodDelete, categoriesURL, nil)
 	rec := httptest.NewRecorder()
 
 	c := e.NewContext(req, rec)
 	c.SetParamNames("categoryID")
-	c.SetParamValues("25")
+	c.SetParamValues(strconv.Itoa(int(createdID)))
 
 	c.Set("user", userClaims)
-	utils.InitializeEnvVars()
 
 	if assert.NoError(t, DeleteCategory(c)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -88,8 +102,6 @@ func TestDeleteCategory(t *testing.T) {
 }
 
 func TestDeleteNonExistingCategory(t *testing.T) {
-	e := echo.New()
-
 	req := httptest.NewRequest(http.MethodDelete, categoriesURL, nil)
 	rec := httptest.NewRecorder()
 
@@ -98,7 +110,6 @@ func TestDeleteNonExistingCategory(t *testing.T) {
 	c.SetParamValues("5842041")
 
 	c.Set("user", userClaims)
-	utils.InitializeEnvVars()
 
 	if assert.NoError(t, DeleteCategory(c)) {
 		assert.Equal(t, http.StatusNotFound, rec.Code)
