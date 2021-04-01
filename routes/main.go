@@ -12,6 +12,7 @@ func InitializeRoutes(e *echo.Echo) {
 	loggedIn := e.Group("/auth", middleware.JWT([]byte(os.Getenv("JWT_TOKEN"))))
 	initializeUsersRoutes(users)
 	initializeTransactionsRoutes(loggedIn)
+	initializeCategoriesRoutes(loggedIn)
 }
 
 func CORSMiddleware(e *echo.Echo) {
