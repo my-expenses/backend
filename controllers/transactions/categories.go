@@ -57,7 +57,9 @@ func GetCategories(c echo.Context) error {
 func UpdateCategory(c echo.Context) error {
 	var category categoriesModel.Category
 	c.Bind(&category)
-	err := c.Validate(category)
+	categoryID, err := strconv.ParseUint(c.FormValue("categoryID"), 10, 64)
+	category.ID = uint(categoryID)
+	err = c.Validate(category)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": err.Error(),
