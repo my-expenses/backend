@@ -6,6 +6,12 @@ import (
 	categoriesModel "backend/models/transactions"
 )
 
+func GetCategoriesCount(userID uint) int64 {
+	categoriesCount := int64(0)
+	dbInstance.GetDBConnection().Model(&categoriesModel.Category{}).Where("user_id = ?", userID).Count(&categoriesCount)
+	return categoriesCount
+}
+
 func CreateCategory(category *categoriesModel.Category) error {
 	db := dbInstance.GetDBConnection().Create(category)
 	if db.RowsAffected == 0 {

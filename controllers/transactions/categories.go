@@ -5,6 +5,7 @@ import (
 	authController "backend/middlewares/auth"
 	categoriesModel "backend/models/transactions"
 	categoriesServices "backend/services/transactions"
+	utilsErrors "backend/utils/errors"
 	"errors"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -23,7 +24,17 @@ func CreateCategory(c echo.Context) error {
 	category.UserID = authController.FetchLoggedInUserID(&c)
 	err = categoriesServices.CreateCategory(&category)
 	if err != nil {
-		return c.JSON(http.StatusConflict, echo.Map{})
+		if errors.Is(err, &utilsErrors.MaximumCategoriesError{}) {
+			return c.JSON(http.StatusNotAcceptable, echo.Map{
+				"message": err.Error(),
+			})
+		}
+		if errors.Is(err, &customDatabaseErrors.DuplicateCategoryError{}) {
+			return c.JSON(http.StatusConflict, echo.Map{
+				"message": err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{
 		"category": category,
