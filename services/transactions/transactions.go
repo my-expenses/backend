@@ -6,6 +6,9 @@ import (
 )
 
 func CreateTransaction(transaction *transactionsModel.Transaction) error {
+	if *transaction.CategoryID == 0 {
+		transaction.CategoryID = nil
+	}
 	return transactionsDBInteractions.CreateTransaction(transaction)
 }
 

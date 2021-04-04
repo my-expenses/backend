@@ -6,6 +6,6 @@ import (
 )
 
 func initializeTransactionsRoutes(loggedInRoute *echo.Group) {
-	loggedInRoute.POST("/categories", transactionsController.CreateTransaction)
-	loggedInRoute.DELETE("/categories", transactionsController.DeleteTransaction)
+	loggedInRoute.POST("/transactions", transactionsController.CreateTransaction)
+	loggedInRoute.DELETE("/transactions", transactionsController.DeleteTransaction)
 }

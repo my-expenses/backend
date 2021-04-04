@@ -25,7 +25,7 @@ func TestCreateTransaction(t *testing.T) {
 		Amount:     250,
 		Title:      "Testing transactions",
 		Type:       false,
-		PaidAt:     currentTime,
+		Date:       currentTime,
 	}
 	err = CreateTransaction(&transaction)
 	createdCategoryID = transaction.ID
@@ -38,7 +38,7 @@ func TestCreateTransaction(t *testing.T) {
 	assert.Equal(t, transaction.Amount, uint(250))
 	assert.Equal(t, transaction.Title, "Testing transactions")
 	assert.Equal(t, transaction.Type, false)
-	assert.Equal(t, transaction.PaidAt.Unix(), currentTime.Unix())
+	assert.Equal(t, transaction.Date.Unix(), currentTime.Unix())
 }
 
 func TestDeleteTransaction(t *testing.T) {
