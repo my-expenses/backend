@@ -55,6 +55,7 @@ func NewUser(c echo.Context) error {
 			"message": "Internal server error",
 		})
 	}
+	credentials.User = user
 	err = usersServices.NewCredentials(&credentials)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{

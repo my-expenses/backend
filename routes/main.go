@@ -20,6 +20,8 @@ func CORSMiddleware(e *echo.Echo) {
 		AllowOrigins: []string{
 			"http://localhost:8080",
 			"http://192.168.1.100:8080",
+			"http://expenses.motawfik.com",
+			"https://expenses.motawfik.com",
 		},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderAccessControlAllowOrigin},
 	}))
