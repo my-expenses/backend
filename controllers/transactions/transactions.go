@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"backend/controllers/pagination"
 	customDatabaseErrors "backend/database/errors"
 	authController "backend/middlewares/auth"
 	transactionsModel "backend/models/transactions"
@@ -27,6 +28,16 @@ func CreateTransaction(c echo.Context) error {
 	}
 	return c.JSON(http.StatusCreated, echo.Map{
 		"transaction": transaction,
+	})
+}
+
+func GetTransactions(c echo.Context) error {
+	paginationData := pagination.ExtractPaginationData(&c)
+	userID := authController.FetchLoggedInUserID(&c)
+	transactions, numberOfRecords := transactionsServices.GetTransactionsByUser(paginationData, userID)
+	return c.JSON(http.StatusOK, echo.Map{
+		"transactions":    transactions,
+		"numberOfRecords": numberOfRecords,
 	})
 }
 
