@@ -35,13 +35,17 @@ func NewUser(c echo.Context) error {
 	var user usersModel.User
 	c.Bind(&user)
 	if err := c.Validate(user); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	var credentials usersModel.Credential
 	c.Bind(&credentials)
 	if err := c.Validate(credentials); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	err := usersServices.NewUser(&user)
