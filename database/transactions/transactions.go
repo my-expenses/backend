@@ -7,17 +7,18 @@ import (
 	paginationData "backend/models/pagination"
 	transactionsModel "backend/models/transactions"
 	"gorm.io/gorm"
+	"time"
 )
 
 func CreateTransaction(transaction *transactionsModel.Transaction) error {
 	return dbInstance.GetDBConnection().Create(transaction).Error
 }
 
-func GetTransactionsByUser(data *paginationData.Data, userID uint) ([]transactionsModel.Transaction, int64) {
+func GetTransactionsByUser(data *paginationData.Data, startOfMonth, endOfMonth time.Time, userID uint) ([]transactionsModel.Transaction, int64) {
 	transactions := make([]transactionsModel.Transaction, 0)
-	query := dbInstance.GetDBConnection().Where("user_id = ?", userID)
+	query := dbInstance.GetDBConnection().Where("user_id = ? AND date BETWEEN ? AND ?", userID, startOfMonth, endOfMonth)
 	numberOfRecords := countTransactions(query)
-	query.Scopes(scopes.Paginate(data)).Preload("Category").Find(&transactions)
+	query.Scopes(scopes.Paginate(data)).Find(&transactions)
 	return transactions, numberOfRecords
 }
 

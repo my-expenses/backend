@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func CreateTransaction(c echo.Context) error {
@@ -34,7 +35,14 @@ func CreateTransaction(c echo.Context) error {
 func GetTransactions(c echo.Context) error {
 	paginationData := pagination.ExtractPaginationData(&c)
 	userID := authController.FetchLoggedInUserID(&c)
-	transactions, numberOfRecords := transactionsServices.GetTransactionsByUser(paginationData, userID)
+	strTime := c.QueryParam("month")
+	month, err := time.Parse(time.RFC3339, strTime)
+	if err != nil {
+		return c.JSON(http.StatusNotAcceptable, echo.Map{
+			"message": "Invalid time format",
+		})
+	}
+	transactions, numberOfRecords := transactionsServices.GetTransactionsByUser(paginationData, month, userID)
 	return c.JSON(http.StatusOK, echo.Map{
 		"transactions":    transactions,
 		"numberOfRecords": numberOfRecords,

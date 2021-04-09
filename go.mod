@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/golang/protobuf v1.5.1 // indirect
+	github.com/jinzhu/now v1.1.2
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/labstack/echo/v4 v4.2.1

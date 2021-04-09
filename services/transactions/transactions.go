@@ -4,6 +4,8 @@ import (
 	transactionsDBInteractions "backend/database/transactions"
 	paginationData "backend/models/pagination"
 	transactionsModel "backend/models/transactions"
+	"github.com/jinzhu/now"
+	"time"
 )
 
 func CreateTransaction(transaction *transactionsModel.Transaction) error {
@@ -13,8 +15,10 @@ func CreateTransaction(transaction *transactionsModel.Transaction) error {
 	return transactionsDBInteractions.CreateTransaction(transaction)
 }
 
-func GetTransactionsByUser(data *paginationData.Data, userID uint) ([]transactionsModel.Transaction, int64) {
-	return transactionsDBInteractions.GetTransactionsByUser(data, userID)
+func GetTransactionsByUser(data *paginationData.Data, month time.Time, userID uint) ([]transactionsModel.Transaction, int64) {
+	startOfMonth := now.With(month).BeginningOfMonth()
+	endOfMonth := now.With(month).EndOfMonth()
+	return transactionsDBInteractions.GetTransactionsByUser(data, startOfMonth, endOfMonth, userID)
 }
 
 func DeleteTransaction(transactionID, userID uint) error {
