@@ -28,6 +28,19 @@ func countTransactions(db *gorm.DB) int64 {
 	return totalTransactions
 }
 
+func GetGroupedTransactions(userID uint, startOfMonth, endOfMonth time.Time) []map[string]interface{} {
+	groupedTransactions := make([]map[string]interface{}, 0)
+
+	dbInstance.GetDBConnection().Select("category_id AS categoryID",
+		// case condition to subtract expenses from income
+		"SUM(CASE WHEN type = 1 THEN amount ELSE -amount END) AS total").
+		Table("transactions").
+		Where("user_id = ? AND date BETWEEN ? AND ?", userID, startOfMonth, endOfMonth).
+		Group("category_id").Find(&groupedTransactions)
+	return groupedTransactions
+}
+
+
 func DeleteTransaction(transactionID, loggedInUserID uint) error {
 	db := dbInstance.GetDBConnection().Unscoped().Where("id = ? AND user_id = ?",
 		transactionID, loggedInUserID).Delete(&transactionsModel.Transaction{})

@@ -49,6 +49,21 @@ func GetTransactions(c echo.Context) error {
 	})
 }
 
+func GetGroupedTransactions(c echo.Context) error {
+	loggedInUserID := authController.FetchLoggedInUserID(&c)
+	strTime := c.QueryParam("month")
+	month, err := time.Parse(time.RFC3339, strTime)
+	if err != nil {
+		return c.JSON(http.StatusNotAcceptable, echo.Map{
+			"message": "Invalid time format",
+		})
+	}
+	groupedTransactions := transactionsServices.GetGroupedTransactions(loggedInUserID, month)
+	return c.JSON(http.StatusOK, echo.Map{
+		"groupedTransactions": groupedTransactions,
+	})
+}
+
 func DeleteTransaction(c echo.Context) error {
 	transactionID, err := strconv.Atoi(c.Param("transactionID"))
 	if err != nil {

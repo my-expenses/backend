@@ -21,6 +21,12 @@ func GetTransactionsByUser(data *paginationData.Data, month time.Time, userID ui
 	return transactionsDBInteractions.GetTransactionsByUser(data, startOfMonth, endOfMonth, userID)
 }
 
+func GetGroupedTransactions(userID uint, month time.Time) []map[string]interface{} {
+	startOfMonth := now.With(month).BeginningOfMonth()
+	endOfMonth := now.With(month).EndOfMonth()
+	return transactionsDBInteractions.GetGroupedTransactions(userID, startOfMonth, endOfMonth)
+}
+
 func DeleteTransaction(transactionID, userID uint) error {
 	return transactionsDBInteractions.DeleteTransaction(transactionID, userID)
 }
