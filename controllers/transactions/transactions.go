@@ -32,6 +32,27 @@ func CreateTransaction(c echo.Context) error {
 	})
 }
 
+func UpdateTransaction(c echo.Context) error {
+	var transaction transactionsModel.Transaction
+	c.Bind(&transaction)
+	transactionID := c.Param("transactionID")
+	err := c.Validate(transaction)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+	transaction.UserID = authController.FetchLoggedInUserID(&c)
+	err = transactionsServices.UpdateTransaction(&transaction, transactionID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"transaction": transaction,
+	})
+}
+
 func GetTransactions(c echo.Context) error {
 	paginationData := pagination.ExtractPaginationData(&c)
 	userID := authController.FetchLoggedInUserID(&c)

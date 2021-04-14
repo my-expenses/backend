@@ -14,6 +14,12 @@ func CreateTransaction(transaction *transactionsModel.Transaction) error {
 	return dbInstance.GetDBConnection().Create(transaction).Error
 }
 
+func UpdateTransaction(transaction *transactionsModel.Transaction, transactionID string) error {
+	return dbInstance.GetDBConnection().Select("*").Omit("created_at, updated_at, deleted_at").
+		Where("id = ? AND user_id = ?", transactionID, transaction.UserID).
+		Updates(transaction).Error
+}
+
 func GetTransactionsByUser(data *paginationData.Data, startOfMonth, endOfMonth time.Time, userID uint) ([]transactionsModel.Transaction, int64) {
 	transactions := make([]transactionsModel.Transaction, 0)
 	query := dbInstance.GetDBConnection().Where("user_id = ? AND date BETWEEN ? AND ?", userID, startOfMonth, endOfMonth)

@@ -5,6 +5,7 @@ import (
 	paginationData "backend/models/pagination"
 	transactionsModel "backend/models/transactions"
 	"github.com/jinzhu/now"
+	"strconv"
 	"time"
 )
 
@@ -13,6 +14,18 @@ func CreateTransaction(transaction *transactionsModel.Transaction) error {
 		transaction.CategoryID = nil
 	}
 	return transactionsDBInteractions.CreateTransaction(transaction)
+}
+
+func UpdateTransaction(transaction *transactionsModel.Transaction, transactionID string) error {
+	if *transaction.CategoryID == 0 {
+		transaction.CategoryID = nil
+	}
+	err := transactionsDBInteractions.UpdateTransaction(transaction, transactionID)
+	if err == nil {
+		uintID, _ := strconv.ParseUint(transactionID, 10, 64)
+		transaction.ID = uint(uintID)
+	}
+	return err
 }
 
 func GetTransactionsByUser(data *paginationData.Data, month time.Time, userID uint) ([]transactionsModel.Transaction, int64) {
