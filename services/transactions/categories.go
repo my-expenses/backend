@@ -4,6 +4,7 @@ import (
 	categoriesDBInteractions "backend/database/transactions"
 	categoriesModel "backend/models/transactions"
 	utilsErrors "backend/utils/errors"
+	"strconv"
 )
 
 func CreateCategory(category *categoriesModel.Category) error {
@@ -22,6 +23,8 @@ func GetCategories(userID uint) []categoriesModel.Category {
 	return categoriesDBInteractions.GetCategories(userID)
 }
 
-func UpdateCategory(category *categoriesModel.Category) error {
+func UpdateCategory(category *categoriesModel.Category, categoryID string) error {
+	uintID, _ := strconv.ParseUint(categoryID, 10, 64)
+	category.ID = uint(uintID)
 	return categoriesDBInteractions.UpdateCategory(category)
 }

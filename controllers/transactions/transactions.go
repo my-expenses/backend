@@ -98,5 +98,5 @@ func DeleteTransaction(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{})
 	}
-	return c.JSON(http.StatusNoContent, echo.Map{})
+	return c.NoContent(http.StatusNoContent)
 }

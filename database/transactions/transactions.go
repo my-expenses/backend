@@ -14,9 +14,9 @@ func CreateTransaction(transaction *transactionsModel.Transaction) error {
 	return dbInstance.GetDBConnection().Create(transaction).Error
 }
 
-func UpdateTransaction(transaction *transactionsModel.Transaction, transactionID string) error {
-	return dbInstance.GetDBConnection().Select("*").Omit("created_at, updated_at, deleted_at").
-		Where("id = ? AND user_id = ?", transactionID, transaction.UserID).
+func UpdateTransaction(transaction *transactionsModel.Transaction) error {
+	return dbInstance.GetDBConnection().Debug().Select("*").Omit("created_at, updated_at, deleted_at").
+		Where("user_id = ?", transaction.UserID).
 		Updates(transaction).Error
 }
 

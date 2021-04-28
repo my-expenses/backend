@@ -54,7 +54,7 @@ func DeleteCategory(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{})
 	}
-	return c.JSON(http.StatusNoContent, echo.Map{})
+	return c.NoContent(http.StatusNoContent)
 }
 
 func GetCategories(c echo.Context) error {
@@ -68,16 +68,15 @@ func GetCategories(c echo.Context) error {
 func UpdateCategory(c echo.Context) error {
 	var category categoriesModel.Category
 	c.Bind(&category)
-	categoryID, err := strconv.ParseUint(c.FormValue("categoryID"), 10, 64)
-	category.ID = uint(categoryID)
-	err = c.Validate(category)
+	categoryID := c.Param("categoryID")
+	err := c.Validate(category)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": err.Error(),
 		})
 	}
 	category.UserID = authController.FetchLoggedInUserID(&c)
-	err = categoriesServices.UpdateCategory(&category)
+	err = categoriesServices.UpdateCategory(&category, categoryID)
 	if err != nil {
 		return c.JSON(http.StatusConflict, echo.Map{})
 	}

@@ -17,15 +17,12 @@ func CreateTransaction(transaction *transactionsModel.Transaction) error {
 }
 
 func UpdateTransaction(transaction *transactionsModel.Transaction, transactionID string) error {
-	if *transaction.CategoryID == 0 {
+	if transaction.CategoryID == nil || *transaction.CategoryID == 0 {
 		transaction.CategoryID = nil
 	}
-	err := transactionsDBInteractions.UpdateTransaction(transaction, transactionID)
-	if err == nil {
-		uintID, _ := strconv.ParseUint(transactionID, 10, 64)
-		transaction.ID = uint(uintID)
-	}
-	return err
+	uintID, _ := strconv.ParseUint(transactionID, 10, 64)
+	transaction.ID = uint(uintID)
+	return transactionsDBInteractions.UpdateTransaction(transaction)
 }
 
 func GetTransactionsByUser(data *paginationData.Data, month time.Time, userID uint) ([]transactionsModel.Transaction, int64) {

@@ -7,6 +7,7 @@ import (
 )
 
 func InitializeRoutes(e *echo.Echo) {
+	e.Use(middleware.Logger())
 	CORSMiddleware(e)
 	users := e.Group("users")
 	loggedIn := e.Group("/auth", middleware.JWT([]byte(os.Getenv("JWT_TOKEN"))))
