@@ -7,12 +7,20 @@ import (
 	"time"
 )
 
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID uint, isAccessToken bool) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = userID
-	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
-	accessToken, err := token.SignedString([]byte(os.Getenv("JWT_TOKEN")))
+	if isAccessToken {
+		claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+		accessToken, err := token.SignedString([]byte(os.Getenv("JWT_TOKEN")))
+		if err != nil {
+			return "", err
+		}
+		return accessToken, nil
+	}
+	claims["exp"] = time.Now().Add(time.Hour * 240).Unix()  // refresh token to expire in 10 days
+	accessToken, err := token.SignedString([]byte(os.Getenv("JWT_REFRESH_TOKEN")))
 	if err != nil {
 		return "", err
 	}

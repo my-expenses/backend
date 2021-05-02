@@ -19,14 +19,32 @@ func Login(c echo.Context) error {
 			"message": "Invalid credentials",
 		})
 	}
-	token, err := authMiddleware.GenerateJWT(userID)
-	if err != nil {
+	accessToken, accessErr := authMiddleware.GenerateJWT(userID, true)
+	refreshToken, refreshErr := authMiddleware.GenerateJWT(userID, false)
+	if accessErr != nil || refreshErr != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "Error generating the token",
+			"message": "Error generating the accessToken",
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"token": token,
+		"accessToken":   accessToken,
+		"refreshToken": refreshToken,
+		"message": "success",
+	})
+}
+
+func RefreshToken(c echo.Context) error {
+	userID := authMiddleware.FetchLoggedInUserID(&c)
+	accessToken, accessErr := authMiddleware.GenerateJWT(userID, true)
+	refreshToken, refreshErr := authMiddleware.GenerateJWT(userID, false)
+	if accessErr != nil || refreshErr != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "Error generating the accessToken",
+		})
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"accessToken":   accessToken,
+		"refreshToken": refreshToken,
 		"message": "success",
 	})
 }
