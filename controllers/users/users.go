@@ -89,3 +89,7 @@ func NewUser(c echo.Context) error {
 	})
 
 }
+
+func ValidStatus(c echo.Context) error {
+	return c.JSON(http.StatusOK, "")
+}
